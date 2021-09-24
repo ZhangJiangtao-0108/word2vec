@@ -23,7 +23,7 @@ class MyDataset(torch.utils.data.Dataset):  # 创类：MyDataset,继承torch.uti
              
 
     def __len__(self):  # 它返回的是数据集的长度，必须有
-        return len(self.imu_datas)
+        return len(self.sentence_datas)
 
 
 ## 定义数据集加载函数
