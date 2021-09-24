@@ -7,11 +7,16 @@ from config.config import datasets_args
 import numpy as np
 import h5py
 
-def make_sentence_data(data_path, gesture_dic_path, save_data_path):
+def make_sentence_data(data_path, gesture_dic_path, gesture_synonym_list_path, save_data_path, datasets_type):
     ## 打开手势字典文件，读取手势字典
     gesture_dic_file = open(gesture_dic_path, 'r')
     gesture_dic = eval(gesture_dic_file.readline())
     gesture_dic_file.close()
+
+    ## 打开同义词字典list
+    gesture_synonym_list_file = open(gesture_synonym_list_path, 'r')
+    gesture_synonym_list = eval(gesture_synonym_list_file.readline())
+    gesture_synonym_list_file.close()
 
     ## 生成数据
     sentence_data = []
@@ -29,7 +34,16 @@ def make_sentence_data(data_path, gesture_dic_path, save_data_path):
         print(sentence_word)
         ## 寻找手势标签
         for word in sentence_word:
-            sentence_label.append(gesture_dic[word])
+            if datasets_type == 'train':
+                sentence_label.append(gesture_dic[word])
+            elif datasets_type == 'test':
+                for i in range(len(gesture_synonym_list)):
+                    if word in gesture_synonym_list[i]:
+                        word = gesture_synonym_list[i][0]
+                sentence_label.append(gesture_dic[word])
+            else:
+                print('error!!')
+                return 0
         ## 补齐手势标签
         if len(sentence_label) < datasets_args['sentence_max_label']:
             sentence_label.insert(0,gesture_dic['sos'])
@@ -50,5 +64,10 @@ def make_sentence_data(data_path, gesture_dic_path, save_data_path):
 if __name__ == '__main__':
     data_path = datasets_args['data_path']
     gesture_dic_path = datasets_args['gesture_dic_path']
-    save_data_path = datasets_args['datasets_path']
-    make_sentence_data(data_path, gesture_dic_path, save_data_path)
+    save_data_train_path = datasets_args['datasets_train_path']
+    gesture_synonym_list_path = datasets_args['gesture_synonym_list']
+    ## 制作训练集
+    make_sentence_data(data_path, gesture_dic_path, gesture_synonym_list_path, save_data_train_path, 'train')
+    ## 制作测试集
+    save_data_test_path = datasets_args['datasets_test_path']
+    make_sentence_data(data_path, gesture_dic_path, gesture_synonym_list_path, save_data_test_path, 'test')
