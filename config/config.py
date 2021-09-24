@@ -1,6 +1,7 @@
 datasets_args = {
             'data_path':'data/sentence_data.txt',
-            'datasets_path':'data/sentence_datasets.hdf5',
+            'datasets_train_path':'data/sentence_datasets_train.hdf5',
+            'datasets_test_path':'data/sentence_datasets_test.hdf5',
             'sentence_max_label':16,
             'gesture_dic_path':'config/gesture_dic_all.txt',
             'gesture_count_path':'config/gesture_count.txt',
