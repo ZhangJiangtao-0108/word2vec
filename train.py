@@ -117,7 +117,7 @@ if __name__ == '__main__':
         model_args['enc_dim'] = int(emb_dim)
 
     ## 配置模型
-    model =  Word2Vec_model(model_args['input_dim'], model_args['emb_dim'], model_args['label_len'])
+    model =  Word2Vec_model(model_args['input_dim'], model_args['emb_dim'], model_args['label_len'], model_type = 'train')
 
 
 
@@ -168,7 +168,7 @@ if __name__ == '__main__':
                 else:
                     continue
                 new_state_dict[k]=v
-            net.load_state_dict(new_state_dict)
+            net.load_state_dict(state_dict)
         print('导入模型成功')
     
 
