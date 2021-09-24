@@ -140,7 +140,7 @@ if __name__ == '__main__':
         net = net.cuda()
     else:
         net = model
-    train_data_loader = loader_data(datasets_args['datasets_path'], train_args['batch_size'])
+    train_data_loader = loader_data(datasets_args['datasets_train_path'], train_args['batch_size'])
     
     ## 判断模型路径是否存在
     model_path = model_args['model_weight_path']
