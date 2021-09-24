@@ -9,12 +9,16 @@ datasets_args = {
 }
 
 model_args = {
-              'model_weight_path':'',
+              'model_weight_path':'model_weight/word2vec_weight.pth',
+              'input_dim':965,
+              'emb_dim':256,
+              'label_len':16
 }
 
 
 train_args = {
               'device':'cpu',
-              'epoch':50,
-              'batch_size':128
+              'epoch':200,
+              'batch_size':128,
+              'train_rate':0.6
 }
