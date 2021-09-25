@@ -105,7 +105,16 @@ def get_gesture_dic(data_path, gesture_dic_path, gesture_count_path, synonym_dic
     print(gesture_,file=gesture_dic) 
     gesture_dic.close()
     
-    
+## 读取手势字典和同义词list
+def get_ges_and_syn_dic(gesture_dic_path, gesture_synonym_list_path):
+    ## 读取手势字典，和同义词list
+    gesture_dic_file = open(gesture_dic_path, 'r')
+    gesture_dic = eval(gesture_dic_file.readline())
+    gesture_dic_file.close()
+    gesture_synonym_list_file = open(gesture_synonym_list_path,'r')
+    gesture_synonym_list = eval(gesture_synonym_list_file.readline())
+    gesture_synonym_list_file.close()
+    return gesture_dic, gesture_synonym_list
 
 
 if __name__ == '__main__':
