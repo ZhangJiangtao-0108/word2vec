@@ -6,6 +6,8 @@ os.environ['CUDA_LAUNCH_BLOCKING'] = "1"
 import numpy as np
 from config.config import model_args, datasets_args
 from word2vec_model.word2vec_layer import  Word2Vec_model
+from utils.get_gesture_dic import get_ges_and_syn_dic
+from utils.compute_show_acc import *
 from collections import OrderedDict
 import h5py
 
@@ -48,23 +50,17 @@ class SynonymChange():
     ## 替换同义词
     def synonym_change(self, sentence_data, net):
         ## 读取手势字典，和同义词list
-        gesture_dic_file = open(self.gesture_dic_path, 'r')
-        gesture_dic = eval(gesture_dic_file.readline())
-        gesture_dic_file.close()
-        gesture_synonym_list_file = open(self.gesture_synonym_list_path,'r')
-        gesture_synonym_list = eval(gesture_synonym_list_file.readline())
-        gesture_synonym_list_file.close()
-
+        gesture_dic, gesture_synonym_list = get_ges_and_syn_dic(self.gesture_dic_path, self.gesture_synonym_list_path)
         ## 获取同义词label
         synonym_label = self.get_synonym_label(gesture_synonym_list,gesture_dic)
         sentence_data_out = []
         for sentence in sentence_data:
-            print(sentence)
+            # print(sentence)
             ## 替换句子中的同义词
             for i in range(len(sentence)):
                 ## 判断句子中是否有同义词
                 if sentence[i] in synonym_label.keys():
-                    print('句子当中的词：',sentence[i])
+                    # print('句子当中的词：',sentence[i])
                     '''
                     1、需要将这一行的label进行掩码
                     2、计算候选词到句子的距离
@@ -79,23 +75,25 @@ class SynonymChange():
                     # word_label = sentence[i]  ## 替换的单词编号
                     word_best_distance = Inf
                     for word in synonym_label[sentence[i]]:
-                        print('同义词：',word, gesture_dic[word])
+                        # print('同义词：',word, gesture_dic[word])
                         label = gesture_dic[word]
                         word_emb = self.get_wordvec(label, net)
                         ## 计算word_emb和sentence_emb的距离
                         word_distance = self.get_word2sentence_distance(word_emb, sentence_emb)
-                        print('distance:', word_distance)
+                        # print('distance:', word_distance)
                         if word_distance < word_best_distance:
                             # print(gesture_dic[word])
                             word_best_distance = word_distance
                             word_label = gesture_dic[word]
                     ## 替换同义词
-                    print('替换的词：', word_label)
+                    # print('替换的词：', word_label)
                     sentence[i] = word_label
             sentence_data_out.append(sentence)
         
         return sentence_data_out
 
+def synonym_change():
+    return SynonymChange()
 
 
 if __name__ == '__main__':
@@ -143,5 +141,8 @@ if __name__ == '__main__':
 
     
     synonymchange = SynonymChange()
-    sentence = synonymchange.synonym_change(sentence_test_datas,net)
-    print(sentence)
+    sentence_change = synonymchange.synonym_change(sentence_test_datas,net)
+    # print(sentence)
+    acc = compute_acc(sentence_train_datas, sentence_test_datas, sentence_change)
+    print(acc)
+    show_result(sentence_train_datas, sentence_test_datas, sentence_change)
