@@ -51,11 +51,14 @@ class SynonymChange():
             sentence_emb_norm = np.linalg.norm(sentence_emb, axis=1, keepdims=True)
             similiarity = np.dot(word_emb_, sentence_emb.T)/(word_emb_norm * sentence_emb_norm) 
             W_S_distence = 1. - similiarity
+        else:
+            print("error!!")
+            return 0
         return W_S_distence
 
 
     ## 替换同义词
-    def synonym_change(self, sentence_data, net):
+    def synonym_change(self, sentence_data, net, distence_type = 'ED'):
         ## 读取手势字典，和同义词list
         gesture_dic, gesture_synonym_list = get_ges_and_syn_dic(self.gesture_dic_path, self.gesture_synonym_list_path)
         ## 获取同义词label
@@ -86,7 +89,7 @@ class SynonymChange():
                         label = gesture_dic[word]
                         word_emb = self.get_wordvec(label, net)
                         ## 计算word_emb和sentence_emb的距离
-                        word_distance = self.get_word2sentence_distance(word_emb, sentence_emb)
+                        word_distance = self.get_word2sentence_distance(word_emb, sentence_emb, distence_type)
                         # print('distance:', word_distance)
                         if word_distance < word_best_distance:
                             # print(gesture_dic[word])
@@ -114,6 +117,7 @@ if __name__ == '__main__':
         ## 从键盘读入训练参数以及一些方式
         print('############################################################')
         device_type = input('请输入训练方式（GPU或CPU）：')
+        distance_type = input('请选择距离公式ED或者COS：')
         print('############################################################')
 
     if device_type == 'GPU':
@@ -146,9 +150,9 @@ if __name__ == '__main__':
     sentence_test_datas = sentence_test['sentence_data'][:]
     sentence_test.close()
 
-    
+    ## 进行同义词的替换
     synonymchange = SynonymChange()
-    sentence_change = synonymchange.synonym_change(sentence_test_datas,net)
+    sentence_change = synonymchange.synonym_change(sentence_test_datas, net, distance_type)
     # print(sentence)
     acc = compute_acc(sentence_train_datas, sentence_test_datas, sentence_change)
     print(acc)
