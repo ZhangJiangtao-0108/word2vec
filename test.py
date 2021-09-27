@@ -50,7 +50,8 @@ class SynonymChange():
             word_emb_norm = np.linalg.norm(word_emb_, axis=1, keepdims=True)
             sentence_emb_norm = np.linalg.norm(sentence_emb, axis=1, keepdims=True)
             similiarity = np.dot(word_emb_, sentence_emb.T)/(word_emb_norm * sentence_emb_norm) 
-            W_S_distence = 1. - similiarity
+            similiarity = 1. - similiarity
+            W_S_distence = similiarity[0].sum()/len(similiarity[0])
         else:
             print("error!!")
             return 0
@@ -78,9 +79,9 @@ class SynonymChange():
                     '''
                     ## 得到句子的词向量表示
                     sentence_emb = self.get_wordvec(sentence, net)
-                    # print(sentence_emb)
+                    # print(sentence_emb.shape)
                     ## 将候选词位置删除，方便距离计算
-                    delete(sentence_emb,i,axis = 0)
+                    sentence_emb = delete(sentence_emb,i,axis = 0)
                     ## 获取候选词的embedding,并举算候选词到句子的距离
                     # word_label = sentence[i]  ## 替换的单词编号
                     word_best_distance = Inf
@@ -113,6 +114,7 @@ if __name__ == '__main__':
     print('设置测试参数：1:默认参数，2:自定义参数')
     change = input()
     device_type = 'cpu'
+    distance_type = 'ED'
     if change == '2':
         ## 从键盘读入训练参数以及一些方式
         print('############################################################')
@@ -149,11 +151,13 @@ if __name__ == '__main__':
     sentence_test = h5py.File(sentence_test_path, 'r')  
     sentence_test_datas = sentence_test['sentence_data'][:]
     sentence_test.close()
-
+    
+    ## 将测试数据进行copy
+    sentence_test_datas_copy = sentence_test_datas.copy()
     ## 进行同义词的替换
     synonymchange = SynonymChange()
     sentence_change = synonymchange.synonym_change(sentence_test_datas, net, distance_type)
     # print(sentence)
-    acc = compute_acc(sentence_train_datas, sentence_test_datas, sentence_change)
+    acc = compute_acc(sentence_train_datas, sentence_test_datas_copy, sentence_change)
     print(acc)
-    show_result(sentence_train_datas, sentence_test_datas, sentence_change)
+    show_result(sentence_train_datas, sentence_test_datas_copy, sentence_change)
