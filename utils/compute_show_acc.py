@@ -39,8 +39,9 @@ def show_result(truth_sentence, test_sentence, change_sentence):
     for i in range(len(truth_sentence)):
         test_gesture = []
         test_synonym_gesture = []
-        for j in range(len(test_sentence[i])):
+        for j in range(len(truth_sentence[i])):
             if test_sentence[i][j] in synonym_label.keys():
+                # print(gesture_dic_[test_sentence[i][j]])
                 test_gesture.append('mask')
                 test_synonym_gesture.append([gesture_dic_[truth_sentence[i][j]], gesture_dic_[change_sentence[i][j]]])
             else:
