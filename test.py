@@ -35,16 +35,23 @@ class SynonymChange():
         return sentence_emb.detach().numpy()
 
     ## 计算词向量到句子的距离,使用ED距离
-    def get_word2sentence_distance(self, word_emb, sentence_emb):
+    def get_word2sentence_distance(self, word_emb, sentence_emb, distence_type = 'ED'):
         ## 将word_emb进行扩展
         # print(sentence_emb)
         word_emb_ = np.tile(word_emb, (len(sentence_emb), 1))
-        ## 计算每个位置元素的差值
-        diffMat = word_emb_ - sentence_emb
-        sqDiffMat = diffMat ** 2
-        sqDistances = sqDiffMat.sum(axis = 1)
-        Distance = sqDistances ** 0.5
-        return Distance.sum()/len(sentence_emb)
+        if distence_type == 'ED':
+            ## 计算每个位置元素的差值
+            diffMat = word_emb_ - sentence_emb
+            sqDiffMat = diffMat ** 2
+            sqDistances = sqDiffMat.sum(axis = 1)
+            Distance = sqDistances ** 0.5
+            W_S_distence = Distance.sum()/len(sentence_emb)
+        elif distence_type == 'COS':
+            word_emb_norm = np.linalg.norm(word_emb_, axis=1, keepdims=True)
+            sentence_emb_norm = np.linalg.norm(sentence_emb, axis=1, keepdims=True)
+            similiarity = np.dot(word_emb_, sentence_emb.T)/(word_emb_norm * sentence_emb_norm) 
+            W_S_distence = 1. - similiarity
+        return W_S_distence
 
 
     ## 替换同义词
