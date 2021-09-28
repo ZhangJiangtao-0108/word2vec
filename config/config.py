@@ -19,7 +19,7 @@ model_args = {
 
 train_args = {
               'device':'cpu',
-              'epoch':200,
+              'epoch':300,
               'batch_size':128,
               'train_rate':0.6
 }
