@@ -27,6 +27,7 @@ class Word2vec(nn.Module):
             # print(sentence_out.shape)
             sentence_out = self.sentence_BN(sentence_out)
             sentence_out = sentence_out.view(batch_size,-1)
+            sentence_out = torch.tanh(sentence_out)
             sentence_pre = self.fc(sentence_out)
             return sentence_emb, sentence_pre
         elif self.model_type == 'test':
