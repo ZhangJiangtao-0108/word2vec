@@ -7,6 +7,23 @@ from config.config import datasets_args
 import numpy as np
 import h5py
 
+def getSentenceData(row_data_path):
+    filenames = os.listdir(row_data_path)
+    sentence = []
+    fuhao = ',./?。、！,。？'
+    for fname in filenames:
+        fname = fname.split("_",1)[0]
+        for f in fuhao:
+            if f in fname:
+                fname.replace(f,'')
+        if fname not in sentence:
+            sentence.append(fname)
+    juzi = open(datasets_args['data_path'],'w')
+    for fname in sentence:
+        print(fname,file=juzi)
+    juzi.close()
+
+
 def make_sentence_data(data_path, gesture_dic_path, gesture_synonym_list_path, save_data_path, datasets_type):
     ## 打开手势字典文件，读取手势字典
     gesture_dic_file = open(gesture_dic_path, 'r')
@@ -62,10 +79,13 @@ def make_sentence_data(data_path, gesture_dic_path, gesture_synonym_list_path, s
 
 
 if __name__ == '__main__':
+    row_data_path = datasets_args['row_data_path']
     data_path = datasets_args['data_path']
     gesture_dic_path = datasets_args['gesture_dic_path']
     save_data_train_path = datasets_args['datasets_train_path']
     gesture_synonym_list_path = datasets_args['gesture_synonym_list']
+    ## 得到句子数据
+    # getSentenceData(row_data_path)
     ## 制作训练集
     make_sentence_data(data_path, gesture_dic_path, gesture_synonym_list_path, save_data_train_path, 'train')
     ## 制作测试集
