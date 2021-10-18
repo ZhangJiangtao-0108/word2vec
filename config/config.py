@@ -1,4 +1,5 @@
 datasets_args = {
+            'row_data_path':'../../sentence_recognition_data/sentence_data_train/imu/',
             'data_path':'data/sentence_data.txt',
             'datasets_train_path':'data/sentence_datasets_train.hdf5',
             'datasets_test_path':'data/sentence_datasets_test.hdf5',
